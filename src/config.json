@@ -1,0 +1,28 @@
+{
+  "site": {
+    "name": "Termolio",
+    "description": "A terminal-style portfolio and blog",
+    "author": "Your Name",
+    "url": "https://termolio.example.com"
+  },
+  "theme": {
+    "syntax_highlighting": "dracula",
+    "terminal_theme": "dark",
+    "font_family": "monospace"
+  },
+  "content": {
+    "articles_path": "content/articles",
+    "projects_path": "content/projects",
+    "max_recent_items": 5
+  },
+  "terminal": {
+    "prompt_symbol": "❯",
+    "default_path": "/",
+    "welcome_message": "Welcome to Termolio Type `help` to see available commands."
+  },
+  "navigation": {
+    "show_breadcrumbs": true,
+    "enable_autocomplete": true,
+    "history_limit": 100
+  }
+}
