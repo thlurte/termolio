@@ -1,5 +1,9 @@
 # Termolio
 
+<p align="center">
+  <img src="/public/termolio.png">
+</p>
+
 A modern, terminal-style portfolio and blog built with React, TypeScript, and Vite. Termolio provides an interactive terminal interface for showcasing projects, articles, and personal information in a unique, developer-friendly way.
 
 ## Features
@@ -215,77 +219,3 @@ The project includes a GitHub Actions workflow for automated Docker image builds
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Customization
-
-### Changing Syntax Highlighting Theme
-
-Edit `src/config.json`:
-```json
-{
-  "theme": {
-    "syntax_highlighting": "materialDark"
-  }
-}
-```
-
-Available themes: `dracula`, `materialDark`
-
-### Adding New Themes
-
-1. Import the theme in `src/App.tsx`:
-```typescript
-import { dracula, materialDark, newTheme } from 'react-syntax-highlighter/dist/esm/styles/prism';
-```
-
-2. Add it to the `getSyntaxTheme()` function:
-```typescript
-const getSyntaxTheme = () => {
-  switch (themeConfig.syntax_highlighting) {
-    case 'dracula':
-      return dracula;
-    case 'materialDark':
-      return materialDark;
-    case 'newTheme':
-      return newTheme;
-    default:
-      return dracula;
-  }
-};
-```
-
-3. Update your `config.json` to use the new theme.
-
-### Custom CSS Variables
-
-The application uses CSS custom properties that are dynamically set based on configuration:
-
-- `--terminal-font-family`: Terminal font family
-- `--terminal-prompt-symbol`: Prompt symbol
-- `--site-name`: Site name
-- `--terminal-welcome-message`: Welcome message
-
-You can override these in your CSS or add new ones by modifying the `useEffect` in `App.tsx`.
-
----
-
-Built with ❤️ for developers who love terminals.
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
