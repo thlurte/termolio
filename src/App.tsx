@@ -183,6 +183,9 @@ const App: React.FC = () => {
       setInput('');
       setCompletions([]);
       setCompletionIndex(-1);
+    } else if (e.key === 'F1') {
+      e.preventDefault();
+      setShowKeyInstructions(!showKeyInstructions);
     }
   };
 
@@ -363,12 +366,16 @@ const App: React.FC = () => {
         </div>
       </div>
       {showKeyInstructions && (
-        <div className="key-instructions-statusbar">
+        <div className="key-instructions-statusbar" onClick={() => setShowKeyInstructions(false)}>
           <span><b>Tab:</b> Autocomplete</span>
           <span className="separator"></span>
           <span><b>↑/↓:</b> Navigate History</span>
           <span className="separator"></span>
           <span><b>Ctrl+C:</b> Clear Input</span>
+          <span className="separator"></span>
+          <span><b>F1:</b> Toggle Help</span>
+          <span className="separator"></span>
+          <span style={{ fontSize: '0.8em', opacity: 0.7 }}>(Click to hide)</span>
         </div>
       )}
     </div>
