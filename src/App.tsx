@@ -1,27 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula, materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import 'katex/dist/katex.min.css';
 import { loadContentFile, availableFiles, loadContentCollection } from './utils/contentLoader';
 import { getTerminalConfig, getNavigationConfig, getThemeConfig, getSiteConfig } from './utils/config';
+import TerminalHeader from './components/TerminalHeader';
+import TerminalTabs from './components/TerminalTabs';
+import TerminalShell from './components/TerminalShell';
+import MarkdownContent from './components/MarkdownContent';
+import KeyInstructions from './components/KeyInstructions';
+import type { Tab, HistoryEntry } from './types';
 import './App.css';
-
-interface Tab {
-  id: string;
-  title: string;
-  content: string;
-  type: 'shell' | 'content';
-}
-
-interface HistoryEntry {
-  type: 'input' | 'output' | 'error';
-  content: string;
-  path?: string;
-}
 
 const App: React.FC = () => {
   const terminalConfig = getTerminalConfig();
@@ -266,118 +254,53 @@ const App: React.FC = () => {
   return (
     <div className="app-container">
       <div className="terminal-app">
-        <div className="terminal-header">
-          <div className="terminal-buttons">
-            <span className="btn close"></span>
-            <span className="btn minimize"></span>
-            <span className="btn maximize"></span>
-          </div>
-          <span className="terminal-title">{siteConfig.name.toLowerCase()} - {getActiveTab()?.title}</span>
-          <span className="terminal-time">{currentTime}</span>
-        </div>
-        <div className="terminal-tabs">
-            {tabs.map(tab => (
-              <div
-                key={tab.id}
-                className={`terminal-tab ${tab.id === activeTabId ? 'active' : ''}`}
-                onClick={() => handleTabClick(tab.id)}
-              >
-                {tab.title}
-                {tab.type !== 'shell' && (
-                  <button onClick={(e) => { e.stopPropagation(); handleCloseTab(tab.id); }} className="close-tab-btn">x</button>
-                )}
-              </div>
-            ))}
-          </div>
+        <TerminalHeader 
+          siteName={siteConfig.name}
+          activeTabTitle={getActiveTab()?.title || 'Shell'}
+          currentTime={currentTime}
+        />
+        <TerminalTabs 
+          tabs={tabs}
+          activeTabId={activeTabId}
+          onTabClick={handleTabClick}
+          onCloseTab={handleCloseTab}
+        />
         <div className="terminal-body">
           <div className="tab-content active">
             {getActiveTab()?.type === 'shell' ? (
-              <div className="terminal-shell-content" ref={terminalBodyRef}>
-                {history.map((line, index) => (
-                  <div key={index} className={`terminal-line ${line.type}`}>
-                    {line.type === 'input' && <span className="prompt">{line.path || terminalConfig.default_path} {terminalConfig.prompt_symbol} </span>}
-                    {line.content}
-                  </div>
-                ))}
-                <div className="input-line">
-                  <span className="prompt">{currentPath} {terminalConfig.prompt_symbol} </span>
-                  <div className="input-container">
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      className="terminal-input-hidden"
-                      value={input}
-                      onChange={handleInputChange}
-                      onKeyDown={handleKeyDown}
-                      autoFocus
-                      onFocus={() => setCursorVisible(true)}
-                      onBlur={() => setCursorVisible(false)}
-                    />
-                    <span className="input-text">{input}</span>
-                    {cursorVisible && <span className="cursor"></span>}
-                  </div>
-                </div>
-                {completions.length > 0 && (
-                  <div className="completions">
-                    {completions.map((comp, index) => (
-                      <span
-                        key={comp}
-                        className={`completion-item ${index === completionIndex ? 'selected' : ''}`}
-                        onClick={() => {
-                          setInput(comp);
-                          setCompletions([]);
-                        }}
-                      >
-                        {comp}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <TerminalShell 
+                history={history}
+                currentPath={currentPath}
+                promptSymbol={terminalConfig.prompt_symbol}
+                defaultPath={terminalConfig.default_path}
+                input={input}
+                cursorVisible={cursorVisible}
+                completions={completions}
+                completionIndex={completionIndex}
+                terminalBodyRef={terminalBodyRef}
+                inputRef={inputRef}
+                onInputChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setCursorVisible(true)}
+                onBlur={() => setCursorVisible(false)}
+                onCompletionClick={(comp) => {
+                  setInput(comp);
+                  setCompletions([]);
+                }}
+              />
             ) : (
-              <div className="markdown-content">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
-                  components={{
-                    code({ className, children, ...props }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      return match ? (
-                        <SyntaxHighlighter
-                          style={getSyntaxTheme() as any}
-                          language={match[1]}
-                          PreTag="div"
-                        >
-                          {String(children).replace(/\n$/, '')}
-                        </SyntaxHighlighter>
-                      ) : (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      );
-                    },
-                  }}
-                >
-                  {getActiveTab()?.content || ''}
-                </ReactMarkdown>
-              </div>
+              <MarkdownContent 
+                content={getActiveTab()?.content || ''}
+                syntaxTheme={getSyntaxTheme()}
+              />
             )}
           </div>
         </div>
       </div>
-      {showKeyInstructions && (
-        <div className="key-instructions-statusbar" onClick={() => setShowKeyInstructions(false)}>
-          <span><b>Tab:</b> Autocomplete</span>
-          <span className="separator"></span>
-          <span><b>↑/↓:</b> Navigate History</span>
-          <span className="separator"></span>
-          <span><b>Ctrl+C:</b> Clear Input</span>
-          <span className="separator"></span>
-          <span><b>F1:</b> Toggle Help</span>
-          <span className="separator"></span>
-          <span style={{ fontSize: '0.8em', opacity: 0.7 }}>(Click to hide)</span>
-        </div>
-      )}
+      <KeyInstructions 
+        showKeyInstructions={showKeyInstructions}
+        onHide={() => setShowKeyInstructions(false)}
+      />
     </div>
   );
 };
