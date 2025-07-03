@@ -4,7 +4,6 @@ import 'katex/dist/katex.min.css';
 import { loadContentFile, availableFiles, loadContentCollection } from './utils/contentLoader';
 import { getTerminalConfig, getNavigationConfig, getThemeConfig, getSiteConfig } from './utils/config';
 import TerminalHeader from './components/TerminalHeader';
-import TerminalTabs from './components/TerminalTabs';
 import TerminalShell from './components/TerminalShell';
 import MarkdownContent from './components/MarkdownContent';
 import KeyInstructions from './components/KeyInstructions';
@@ -32,17 +31,9 @@ const App: React.FC = () => {
   const [completionIndex, setCompletionIndex] = useState(-1);
   const [showKeyInstructions, setShowKeyInstructions] = useState(true);
   const [cursorVisible, setCursorVisible] = useState(true);
-  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString());
 
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalBodyRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     // Set CSS custom properties based on config
@@ -257,9 +248,6 @@ const App: React.FC = () => {
         <TerminalHeader 
           siteName={siteConfig.name}
           activeTabTitle={getActiveTab()?.title || 'Shell'}
-          currentTime={currentTime}
-        />
-        <TerminalTabs 
           tabs={tabs}
           activeTabId={activeTabId}
           onTabClick={handleTabClick}
