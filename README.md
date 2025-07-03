@@ -4,7 +4,7 @@
   <img src="/public/termolio.png">
 </p>
 
-A modern, terminal-style portfolio and blog built with React, TypeScript, and Vite.
+This is merely a by product of me wanting to upset people who doesn't wanna use TUI, yeah face it.
 
 ---
 
@@ -19,8 +19,8 @@ A modern, terminal-style portfolio and blog built with React, TypeScript, and Vi
 - [GitHub Actions](docs/github-actions.md)
 - [Technologies Used](docs/technologies.md)
 - [Contributing](docs/contributing.md)
-- [License](docs/license.md)
 
 ---
+## License
 
-For full documentation, see the links above.
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.
